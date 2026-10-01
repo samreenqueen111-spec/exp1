@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Log In | CareBridge{% endblock %}
+
+{% block content %}
+<div style="max-width: 450px; margin: 2rem auto;">
+    <div class="card">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 0.5rem;">CareBridge Portal Login</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            Access for Survivors, Authorized Counselors, and Administrators
+        </p>
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="identifier">Email Address or Anonymous ID</label>
+                <input type="text" id="identifier" name="identifier" class="form-control" placeholder="e.g. survivor1@carebridge.org or CB-7842" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Sign In</button>
+        </form>
+
+        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <p>New survivor? <a href="{{ url_for('register') }}" style="color: var(--primary-color); font-weight: 600;">Create pseudonymous account</a></p>
+        </div>
+    </div>
+
+    <!-- Quick Demo Logins Helper Card for Hackathon evaluators -->
+    <div class="info-box" style="margin-top: 1.5rem; font-size: 0.88rem;">
+        <strong style="color: var(--primary-color);">🔑 Demo Credentials (Hackathon Prototype):</strong>
+        <ul style="margin-left: 1.2rem; margin-top: 0.4rem; list-style: disc; color: var(--text-main);">
+            <li><strong>Survivor:</strong> <code>survivor1@carebridge.org</code> / <code>password123</code></li>
+            <li><strong>Counselor:</strong> <code>counselor@carebridge.org</code> / <code>counselor123</code></li>
+            <li><strong>Admin:</strong> <code>admin@carebridge.org</code> / <code>admin123</code></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

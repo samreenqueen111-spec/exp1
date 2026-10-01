@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" {% if is_rtl %}dir="rtl"{% endif %}>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}carebridge | Mental Health Monitoring & Distress Prediction System{% endblock %}</title>
+    <!-- Prevent Theme Flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('carebridge_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <!-- Google Fonts for Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Emergency / Non-Diagnostic Safety Disclaimer Banner -->
+    <div class="disclaimer-banner">
+        {{ _t('disclaimer_banner') }}
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="nav-brand">
+            🌿 carebridge
+            <span class="brand-tag">Privacy-First</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}">{{ _t('nav_home') }}</a></li>
+            <li><a href="{{ url_for('about') }}">{{ _t('nav_about') }}</a></li>
+            <li><a href="{{ url_for('privacy') }}">{{ _t('nav_privacy') }}</a></li>
+
+            {% if current_user %}
+                {% if current_user['role'] == 'survivor' %}
+                    <li><a href="{{ url_for('survivor_dashboard') }}">{{ _t('nav_dashboard') }}</a></li>
+                    <li><a href="{{ url_for('checkin') }}">{{ _t('nav_checkin') }}</a></li>
+                    <li><a href="{{ url_for('survivor_history') }}">{{ _t('nav_history') }}</a></li>
+                    <li><a href="{{ url_for('survivor_support') }}">{{ _t('nav_support') }}</a></li>
+                {% elif current_user['role'] in ['counselor', 'admin'] %}
+                    <li><a href="{{ url_for('counselor_dashboard') }}">{{ _t('nav_counselor_portal') }}</a></li>
+                    <li><a href="{{ url_for('counselor_users') }}">{{ _t('nav_anonymized_survivors') }}</a></li>
+                    <li><a href="{{ url_for('counselor_alerts') }}">{{ _t('nav_alerts') }}</a></li>
+                {% endif %}
+
+                {% if current_user['role'] == 'admin' %}
+                    <li><a href="{{ url_for('admin_dashboard') }}">{{ _t('nav_admin_control') }}</a></li>
+                {% endif %}
+
+                <li>
+                    <div class="user-badge">
+                        <span>{{ current_user['name'] if current_user['role'] != 'survivor' else current_user['anonymous_id'] }}</span>
+                        <span class="role-pill">{{ current_user['role'] }}</span>
+                    </div>
+                </li>
+                <li><a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">{{ _t('nav_logout') }}</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">{{ _t('nav_login') }}</a></li>
+                <li><a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">{{ _t('nav_register') }}</a></li>
+            {% endif %}
+
+            <!-- Language Selector Dropdown -->
+            <li>
+                <div class="language-dropdown">
+                    <button class="theme-toggle-btn" aria-label="Select Language">
+                        🌐 {{ languages.get(current_lang, 'English') }}
+                    </button>
+                    <div class="language-menu">
+                        {% for code, name in languages.items() %}
+                            <a href="{{ url_for('set_language', lang_code=code) }}" class="{% if code == current_lang %}active{% endif %}">
+                                {{ name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </li>
+
+            <!-- Dark / Light Mode Toggle Button -->
+            <li>
+                <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle Dark or Light Theme">
+                    🌙 Dark Mode
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span>{{ message }}</span>
+                            <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;cursor:pointer;font-size:1.1rem;">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 <strong>carebridge</strong> — {{ _t('footer_rights') }}</p>
+        <p>Built for privacy, dignity, and trauma-informed support. <a href="{{ url_for('privacy') }}">{{ _t('nav_privacy') }}</a> | <a href="{{ url_for('about') }}">{{ _t('nav_about') }}</a></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

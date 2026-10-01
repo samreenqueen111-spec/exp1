@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found | CareBridge{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 3rem auto; text-align: center; padding: 2.5rem 1.5rem;">
+    <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🌿 404</div>
+    <h2 style="color: var(--card-title-color); margin-bottom: 0.75rem;">Page Not Found</h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        The page or resource you are looking for could not be located. It may have been moved or removed.
+    </p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Home Page</a>
+</div>
+{% endblock %}

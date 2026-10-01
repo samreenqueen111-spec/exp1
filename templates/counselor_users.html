@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Anonymized Survivor Roster | CareBridge{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="margin-bottom: 1.5rem;">
+        <h1 style="color: var(--card-title-color);">Anonymized Survivor Roster</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Confidential directory of enrolled community participants identified strictly by secure, pseudonymous Anonymous IDs to protect safety and privacy.
+        </p>
+    </div>
+
+    {% if survivors %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Confidential ID</th>
+                        <th>Age Group</th>
+                        <th>Gender (Optional)</th>
+                        <th>Total Check-ins Logged</th>
+                        <th>Latest Care Indicator</th>
+                        <th>Last Check-in Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in survivors %}
+                        <tr>
+                            <td><code style="font-weight: bold; color: var(--primary-color);">{{ s['anonymous_id'] }}</code></td>
+                            <td>{{ s['age_group'] }}</td>
+                            <td>{{ s['gender_optional'] or 'Not specified' }}</td>
+                            <td>{{ s['total_checkins'] }}</td>
+                            <td>
+                                {% if s['latest_indicator'] %}
+                                    <span class="badge badge-{{ s['latest_indicator'] | lower }}">
+                                        {{ s['latest_indicator'] }}
+                                    </span>
+                                {% else %}
+                                    <span style="color: var(--text-muted); font-size: 0.85rem;">No Check-ins Yet</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ s['last_checkin'] or 'Never' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted);">No survivor accounts registered at this time.</p>
+    {% endif %}
+</div>
+{% endblock %}

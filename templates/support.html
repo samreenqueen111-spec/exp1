@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Support Resources & Helplines | CareBridge{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <h1 style="color: var(--card-title-color); margin-bottom: 0.5rem;">Support Resources & Helplines</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
+        CareBridge connects survivors with accredited crisis helplines, trauma-informed therapy networks, and humanitarian organizations.
+    </p>
+
+    <div class="alert alert-warning" style="font-size: 0.85rem;">
+        ⚠️ <strong>Prototype Note:</strong> The resource contacts listed below are illustrative demonstration placeholders. In an active deployment, these will be populated with local emergency and accredited regional helpline numbers by system administrators.
+    </div>
+</div>
+
+<div class="grid-2">
+    {% for r in resources %}
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <h3 style="color: var(--primary-color); font-size: 1.1rem; margin: 0;">{{ r['name'] }}</h3>
+                <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--primary-color); border-color: rgba(99, 102, 241, 0.3);">{{ r['category'] }}</span>
+            </div>
+
+            <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 1rem; line-height: 1.6;">
+                {{ r['description'] }}
+            </p>
+
+            <div class="info-box" style="padding: 0.85rem 1.1rem; font-size: 0.9rem;">
+                <div style="margin-bottom: 0.35rem;">
+                    <strong>📞 Contact:</strong> <code style="font-size: 0.92rem;">{{ r['contact'] }}</code>
+                </div>
+                <div>
+                    <strong>📍 Location Scope:</strong> {{ r['location'] }}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

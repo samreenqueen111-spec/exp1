@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Control Panel | CareBridge{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h1 style="color: var(--card-title-color);">Administrator Control Panel</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">System administration, ML model diagnostics, and support resource management.</p>
+    </div>
+    <div>
+        <form method="POST" action="{{ url_for('retrain_model') }}" style="display: inline;">
+            <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Retrain ML model on synthetic dataset?')">
+                🔄 Retrain Synthetic ML Model
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- System Stats Row -->
+<div class="grid-4" style="margin-bottom: 2rem;">
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div>
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Total Registered Accounts</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🌱</div>
+        <div>
+            <div class="stat-value">{{ total_survivors }}</div>
+            <div class="stat-label">Survivors</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🩺</div>
+        <div>
+            <div class="stat-value">{{ total_counselors }}</div>
+            <div class="stat-label">Authorized Counselors</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div>
+            <div class="stat-value">{{ total_checkins }}</div>
+            <div class="stat-label">Total Check-ins</div>
+        </div>
+    </div>
+</div>
+
+<!-- ML Model Diagnostic Performance Panel -->
+<div class="card" style="margin-bottom: 2rem;">
+    <h3 class="card-title">🤖 Machine Learning Model Diagnostic Metrics (Prototype)</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Evaluation results computed on synthetic validation set (DecisionTree Classifier, max_depth=5).
+    </p>
+
+    {% if metrics %}
+        <div class="grid-3" style="margin-bottom: 1.5rem;">
+            <div class="info-box" style="text-align: center;">
+                <div style="font-size: 0.88rem; color: var(--primary-color); font-weight: 600;">Classification Accuracy</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--card-title-color);">{{ (metrics['accuracy'] * 100) | round(1) }}%</div>
+            </div>
+
+            <div class="info-box" style="text-align: center;">
+                <div style="font-size: 0.88rem; color: var(--accent-teal); font-weight: 600;">Weighted Precision</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--card-title-color);">{{ (metrics['precision'] * 100) | round(1) }}%</div>
+            </div>
+
+            <div class="info-box" style="text-align: center;">
+                <div style="font-size: 0.88rem; color: #10b981; font-weight: 600;">Weighted Recall</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--card-title-color);">{{ (metrics['recall'] * 100) | round(1) }}%</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Feature Importances -->
+            <div>
+                <h4 style="color: var(--card-title-color); margin-bottom: 0.5rem;">Feature Importances</h4>
+                <div class="table-responsive">
+                    <table class="table" style="font-size: 0.88rem;">
+                        <thead>
+                            <tr>
+                                <th>Feature Name</th>
+                                <th>Weight / Importance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for feat, imp in metrics['feature_importances'].items() %}
+                                <tr>
+                                    <td><code>{{ feat }}</code></td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <div style="background: var(--primary-gradient); height: 8px; width: {{ (imp * 100 * 2) | round }}px; border-radius: 4px;"></div>
+                                            <span style="font-weight: 600;">{{ imp }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Confusion Matrix Table -->
+            <div>
+                <h4 style="color: var(--card-title-color); margin-bottom: 0.5rem;">Confusion Matrix (Validation Set)</h4>
+                <div class="table-responsive">
+                    <table class="table" style="font-size: 0.88rem; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>Predicted ↓ / Actual →</th>
+                                <th>Low</th>
+                                <th>Moderate</th>
+                                <th>High</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row_idx in range(3) %}
+                                <tr>
+                                    <td><strong>{{ metrics['labels'][row_idx] }}</strong></td>
+                                    {% for col_idx in range(3) %}
+                                        <td style="font-weight: bold; background: {% if row_idx == col_idx %}rgba(16, 185, 129, 0.22){% else %}var(--box-inner-bg){% endif %}; color: {% if row_idx == col_idx %}#10b981{% else %}var(--text-main){% endif %};">
+                                            {{ metrics['confusion_matrix'][row_idx][col_idx] }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted);">Model metrics not available. Click Retrain Model above.</p>
+    {% endif %}
+</div>
+
+<!-- Management Grid (Add Counselor & Manage Support Resources) -->
+<div class="grid-2">
+    <!-- Add Counselor Form -->
+    <div class="card">
+        <h3 class="card-title">➕ Add Authorized Counselor</h3>
+        <form method="POST" action="{{ url_for('add_counselor') }}">
+            <div class="form-group">
+                <label for="couns_name">Full Name & Title</label>
+                <input type="text" id="couns_name" name="name" class="form-control" placeholder="e.g. Dr. Maria Santos" required>
+            </div>
+            <div class="form-group">
+                <label for="couns_email">Official Email</label>
+                <input type="email" id="couns_email" name="email" class="form-control" placeholder="counselor@carebridge.org" required>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="badge_id">Staff Badge ID</label>
+                    <input type="text" id="badge_id" name="badge_id" class="form-control" placeholder="103" required>
+                </div>
+                <div class="form-group">
+                    <label for="couns_pwd">Initial Password</label>
+                    <input type="password" id="couns_pwd" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Counselor Account</button>
+        </form>
+    </div>
+
+    <!-- Add Support Resource Form -->
+    <div class="card">
+        <h3 class="card-title">📌 Add Support Resource</h3>
+        <form method="POST" action="{{ url_for('add_resource') }}">
+            <div class="form-group">
+                <label for="res_name">Resource / Helpline Name</label>
+                <input type="text" id="res_name" name="name" class="form-control" placeholder="e.g. National Youth Crisis Line" required>
+            </div>
+            <div class="form-group">
+                <label for="res_desc">Description</label>
+                <input type="text" id="res_desc" name="description" class="form-control" placeholder="24/7 confidential support..." required>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="res_contact">Contact (Phone/Email)</label>
+                    <input type="text" id="res_contact" name="contact" class="form-control" placeholder="1-800-DEMO-CARE (Placeholder)" required>
+                </div>
+                <div class="form-group">
+                    <label for="res_cat">Category</label>
+                    <select id="res_cat" name="category" class="form-control">
+                        <option value="Helpline">Helpline</option>
+                        <option value="NGO">NGO Organization</option>
+                        <option value="Medical">Medical / Therapy</option>
+                        <option value="Crisis Center">Crisis Center</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="res_loc">Location Scope</label>
+                <input type="text" id="res_loc" name="location" class="form-control" placeholder="National / Regional" required>
+            </div>
+            <button type="submit" class="btn btn-secondary" style="width: 100%;">Save Support Resource</button>
+        </form>
+    </div>
+</div>
+
+<!-- Support Resources List Table -->
+<div class="card" style="margin-top: 2rem;">
+    <h3 class="card-title">Existing Support Resources</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Contact</th>
+                    <th>Location</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in resources %}
+                    <tr>
+                        <td><strong>{{ r['name'] }}</strong></td>
+                        <td>{{ r['category'] }}</td>
+                        <td><code>{{ r['contact'] }}</code></td>
+                        <td>{{ r['location'] }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('delete_resource', resource_id=r['id']) }}" style="display:inline;">
+                                <button type="submit" class="btn btn-outline btn-sm" onclick="return confirm('Delete this resource?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

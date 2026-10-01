@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}About CareBridge | System Methodology & Ethics{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    <h1 style="color: var(--primary-color); margin-bottom: 1rem;">About CareBridge</h1>
+
+    <div class="alert alert-info">
+        <strong>Academic / Hackathon Prototype Statement:</strong> CareBridge is designed as a student prototype demonstrating how explainable machine learning and rule-based monitoring can support humanitarian caseworkers. It is strictly non-diagnostic.
+    </div>
+
+    <h3 style="margin-top: 1.5rem; color: var(--card-title-color);">Problem Statement & Vision</h3>
+    <p style="color: var(--text-main);">
+        Survivors of atrocities, mass displacement, or conflict often face severe emotional trauma. Traditional mental health monitoring relies on infrequent clinical visits, making it difficult to detect subtle worsening of distress or sleep disturbances between consultations. CareBridge provides a gentle daily check-in mechanism that highlights early-warning distress trends without forcing survivors to recount graphic details of past trauma.
+    </p>
+
+    <h3 style="margin-top: 1.5rem; color: var(--card-title-color);">Core Machine Learning Architecture</h3>
+    <p style="color: var(--text-main);">
+        CareBridge uses an interpretable <strong>Decision Tree Classifier</strong> trained on a synthetic feature matrix:
+    </p>
+    <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color: var(--text-main);">
+        <li><strong>Stress Intensity (1 - 10)</strong></li>
+        <li><strong>Sleep Quality (1 - 10)</strong></li>
+        <li><strong>Concentration Difficulty (1 - 10)</strong></li>
+        <li><strong>Perceived Social Support (1 - 10)</strong></li>
+        <li><strong>Distress Thought Frequency (1 - 10)</strong></li>
+        <li><strong>Previous Check-in Baseline Score</strong></li>
+    </ul>
+
+    <h3 style="margin-top: 1.5rem; color: var(--card-title-color);">Ethical Framework & Safety Safeguards</h3>
+    <p style="color: var(--text-main);">
+        The system enforces strict ethical boundaries:
+    </p>
+    <ol style="margin-left: 1.5rem; margin-top: 0.5rem; color: var(--text-main);">
+        <li><strong>Non-Diagnostic Language:</strong> Predictions are framed purely as relative distress indicators ("High distress level today"), never clinical diagnoses.</li>
+        <li><strong>No Real Victim Data:</strong> All training and demonstration datasets rely on synthetic, randomized numerical values.</li>
+        <li><strong>Data Minimization:</strong> Survivors are identified by pseudonymous IDs (e.g., <code>CB-7842</code>). No detailed narratives of traumatic events are asked or stored.</li>
+    </ol>
+
+    <div style="margin-top: 2rem; text-align: center;">
+        <a href="{{ url_for('privacy') }}" class="btn btn-primary">Read Privacy Policy</a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

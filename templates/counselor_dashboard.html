@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Counselor Portal | CareBridge{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; background: var(--calm-gradient), var(--card-bg); border: 1px solid rgba(139, 92, 246, 0.25);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.35rem;">
+                <span style="font-size: 1.75rem;">🩺</span>
+                <h1 style="color: var(--card-title-color); font-size: 2.2rem; margin: 0;">Counselor Portal</h1>
+            </div>
+            <p style="color: var(--text-muted); font-size: 1rem; margin: 0;">
+                Compassionate, Anonymized Support Desk & Proactive Care Coordination
+            </p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="{{ url_for('counselor_alerts') }}" class="btn btn-primary btn-sm" style="box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);">
+                🔔 Care Alerts (<span id="headerPendingAlertsCount">{{ pending_alerts_count }}</span>)
+            </a>
+            <a href="{{ url_for('counselor_users') }}" class="btn btn-outline btn-sm">
+                👥 Participant Roster
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Real-Time High Distress Alert Popup Modal -->
+<div id="liveAlertBackdrop" class="live-alert-backdrop"></div>
+<div id="liveAlertModal" class="live-alert-modal" role="alertdialog" aria-modal="true" aria-labelledby="liveAlertTitle">
+    <div class="alert-modal-header">
+        <div class="alert-icon-wrapper">
+            <span>⚠️</span>
+        </div>
+        <div class="alert-header-text">
+            <h3 id="liveAlertTitle" class="alert-title">
+                <span class="alert-pulse-badge"></span>
+                High Distress Alert
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Automated AI Early Warning Notification</p>
+        </div>
+    </div>
+
+    <div class="alert-message-text" id="liveAlertMessage">
+        High Distress Alert: A survivor’s recent responses indicate elevated distress. Please review and consider follow-up.
+    </div>
+
+    <!-- Confidential Meta Information -->
+    <div class="alert-meta-grid">
+        <div class="alert-meta-item">
+            <div class="alert-meta-label">Survivor ID</div>
+            <div class="alert-meta-value"><code id="liveAlertSurvivorId" style="color: var(--primary-color); font-size: 0.95rem;">CB-XXXX</code></div>
+        </div>
+        <div class="alert-meta-item">
+            <div class="alert-meta-label">Risk Level</div>
+            <div class="alert-meta-value"><span id="liveAlertRiskBadge" class="badge badge-high" style="font-size: 0.75rem;">High</span></div>
+        </div>
+        <div class="alert-meta-item">
+            <div class="alert-meta-label">Check-in Time</div>
+            <div class="alert-meta-value" id="liveAlertTime" style="font-size: 0.82rem;">Just now</div>
+        </div>
+    </div>
+
+    <div class="alert-disclaimer">
+        ℹ️ <strong>Confidentiality Notice:</strong> CareBridge early warning indicators reflect self-reported distress patterns and do not constitute a psychiatric or medical diagnosis.
+    </div>
+
+    <div class="alert-actions">
+        <button type="button" id="liveAlertDismissBtn" class="btn-alert-dismiss">Dismiss</button>
+        <button type="button" id="liveAlertReviewBtn" class="btn-alert-review">Review Follow-Up &rarr;</button>
+    </div>
+</div>
+
+<!-- Key Stat Metric Cards -->
+<div class="grid-4" style="margin-bottom: 2rem;">
+    <div class="stat-card" style="border-top: 4px solid var(--primary-color);">
+        <div class="stat-icon">👥</div>
+        <div>
+            <div class="stat-value" id="statTotalSurvivors">{{ total_survivors }}</div>
+            <div class="stat-label">Active Participants</div>
+        </div>
+    </div>
+
+    <div class="stat-card" style="border-top: 4px solid var(--accent-teal);">
+        <div class="stat-icon">📝</div>
+        <div>
+            <div class="stat-value" id="statRecentCheckins">{{ recent_checkins_count }}</div>
+            <div class="stat-label">Reflections (Last 7 Days)</div>
+        </div>
+    </div>
+
+    <div class="stat-card" style="border-top: 4px solid #f43f5e;">
+        <div class="stat-icon" style="background: rgba(244, 63, 94, 0.15); color: #f43f5e; border-color: rgba(244, 63, 94, 0.3);">⚠️</div>
+        <div>
+            <div class="stat-value" id="statHighDistressCount" style="color: #f43f5e;">{{ high_distress_count }}</div>
+            <div class="stat-label">Elevated Support Needs</div>
+        </div>
+    </div>
+
+    <div class="stat-card" style="border-top: 4px solid #f59e0b;">
+        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3);">🔔</div>
+        <div>
+            <div class="stat-value" id="statPendingAlertsCount" style="color: #f59e0b;">{{ pending_alerts_count }}</div>
+            <div class="stat-label">Pending Follow-Ups</div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart & Filter Controls Grid -->
+<div class="grid-3" style="margin-bottom: 2rem;">
+    <!-- Doughnut Chart for Distress Distribution -->
+    <div class="card" style="grid-column: span 1; border: 1px solid rgba(99, 102, 241, 0.2);">
+        <h3 class="card-title">
+            <span>Support Needs Overview</span>
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">Distribution across recent self-reflections.</p>
+        <div style="position: relative; height: 240px; width: 100%;">
+            <canvas id="distressDistributionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Active Early Warning Alerts Preview -->
+    <div class="card" style="grid-column: span 2; border: 1px solid rgba(139, 92, 246, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 class="card-title" style="margin:0;">🚨 Priority Care Alerts & Follow-Ups</h3>
+            <a href="{{ url_for('counselor_alerts') }}" class="btn btn-outline btn-sm">View All Care Alerts &rarr;</a>
+        </div>
+
+        <div id="counselorAlertsContainer">
+        {% if alerts %}
+            <div class="table-responsive">
+                <table class="table" style="font-size: 0.88rem;">
+                    <thead>
+                        <tr>
+                            <th>Participant ID</th>
+                            <th>Care Indicator</th>
+                            <th>Trigger Reason</th>
+                            <th>Status</th>
+                            <th>Logged At</th>
+                        </tr>
+                    </thead>
+                    <tbody id="counselorAlertsTableBody">
+                        {% for a in alerts[:4] %}
+                            <tr>
+                                <td><code>{{ a['anonymous_id'] }}</code></td>
+                                <td><span class="badge badge-{{ a['indicator'] | lower }}">{{ a['indicator'] }}</span></td>
+                                <td>{{ a['reason'] }}</td>
+                                <td><span class="badge badge-{{ a['status'] | lower }}">{{ a['status'] }}</span></td>
+                                <td>{{ a['created_at'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div id="counselorEmptyAlerts" style="text-align: center; padding: 2rem 0; color: var(--text-muted);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">✨</div>
+                <p style="font-size: 0.95rem;">All participants are currently reporting manageable wellness scores. No urgent follow-ups pending.</p>
+            </div>
+        {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Filterable Anonymized Check-ins Table -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+            <h3 class="card-title" style="margin: 0;">Anonymized Participant Reflections</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.25rem;">
+                Confidential check-in data to help identify timely outreach opportunities while strictly safeguarding identities.
+            </p>
+        </div>
+        
+        <!-- Filter Form -->
+        <form method="GET" action="{{ url_for('counselor_dashboard') }}" style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+            <select name="indicator" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.88rem;">
+                <option value="">All Support Levels</option>
+                <option value="Low" {% if indicator_filter == 'Low' %}selected{% endif %}>Low Distress</option>
+                <option value="Moderate" {% if indicator_filter == 'Moderate' %}selected{% endif %}>Moderate Distress</option>
+                <option value="High" {% if indicator_filter == 'High' %}selected{% endif %}>High Distress</option>
+            </select>
+
+            <select name="days" class="form-control" style="width: auto; padding: 0.45rem 0.85rem; font-size: 0.88rem;">
+                <option value="7" {% if date_filter == '7' %}selected{% endif %}>Past 7 Days</option>
+                <option value="14" {% if date_filter == '14' %}selected{% endif %}>Past 14 Days</option>
+                <option value="30" {% if date_filter == '30' %}selected{% endif %}>Past 30 Days</option>
+            </select>
+
+            <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+            <a href="{{ url_for('counselor_dashboard') }}" class="btn btn-outline btn-sm">Reset</a>
+        </form>
+    </div>
+
+    {% if checkins %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Confidential ID</th>
+                        <th>Age Group</th>
+                        <th>Stress (1-10)</th>
+                        <th>Sleep (1-10)</th>
+                        <th>Focus (1-10)</th>
+                        <th>Support (1-10)</th>
+                        <th>Distress Freq</th>
+                        <th>AI Predicted Indicator</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in checkins %}
+                        <tr>
+                            <td><code style="font-size: 0.95rem; color: var(--primary-color);">{{ c['anonymous_id'] }}</code></td>
+                            <td>{{ c['age_group'] }}</td>
+                            <td>{{ c['stress_score'] }}</td>
+                            <td>{{ c['sleep_score'] }}</td>
+                            <td>{{ c['concentration_score'] }}</td>
+                            <td>{{ c['social_support_score'] }}</td>
+                            <td>{{ c['distress_frequency'] }}</td>
+                            <td>
+                                <span class="badge badge-{{ c['predicted_indicator'] | lower }}">
+                                    {{ c['predicted_indicator'] }}
+                                </span>
+                            </td>
+                            <td>{{ c['created_at'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); font-size: 0.95rem; padding: 1.5rem 0; text-align: center;">No check-in records match the selected filter criteria.</p>
+    {% endif %}
+</div>
+{% endblock %}

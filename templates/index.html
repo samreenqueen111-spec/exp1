@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}carebridge | Empathetic Mental Health Support Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <h1>{{ _t('hero_title') }}</h1>
+    <p>{{ _t('hero_desc') }}</p>
+    <div style="display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; position: relative;">
+        {% if not current_user %}
+            <a href="{{ url_for('register') }}" class="btn btn-primary" style="padding: 0.9rem 2rem; font-size: 1.12rem;">✨ {{ _t('btn_start_checkin') }}</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline" style="padding: 0.9rem 2rem; font-size: 1.12rem;">🔑 {{ _t('btn_login') }}</a>
+        {% else %}
+            {% if current_user['role'] == 'survivor' %}
+                <a href="{{ url_for('checkin') }}" class="btn btn-primary" style="padding: 0.9rem 2rem; font-size: 1.12rem;">📝 {{ _t('btn_submit_checkin') }}</a>
+                <a href="{{ url_for('survivor_dashboard') }}" class="btn btn-outline" style="padding: 0.9rem 2rem; font-size: 1.12rem;">📊 {{ _t('nav_dashboard') }}</a>
+            {% else %}
+                <a href="{{ url_for('counselor_dashboard') }}" class="btn btn-primary" style="padding: 0.9rem 2rem; font-size: 1.12rem;">🩺 {{ _t('nav_counselor_portal') }}</a>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>
+
+<!-- Feature Columns -->
+<section style="margin-bottom: 3rem;">
+    <h2 style="text-align: center; margin-bottom: 2rem; color: var(--card-title-color);">Key System Pillars</h2>
+    <div class="grid-3">
+        <div class="card" style="border-top: 4px solid #6366f1;">
+            <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🌱</div>
+            <h3 class="card-title">For Survivors</h3>
+            <p style="color: var(--text-muted); font-size: 1.02rem; line-height: 1.7;">
+                A gentle, non-intrusive daily check-in space. Track your stress, sleep, and emotional well-being without re-telling traumatic details. Receive supportive, non-diagnostic guidance tailored to your daily trends.
+            </p>
+        </div>
+
+        <div class="card" style="border-top: 4px solid #3b82f6;">
+            <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🤝</div>
+            <h3 class="card-title">For Support Workers</h3>
+            <p style="color: var(--text-muted); font-size: 1.02rem; line-height: 1.7;">
+                Authorized counselors and NGO caseworkers access anonymized distress dashboards. Early-warning indicators highlight individuals who may benefit from gentle follow-up or care coordination.
+            </p>
+        </div>
+
+        <div class="card" style="border-top: 4px solid #10b981;">
+            <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🛡️</div>
+            <h3 class="card-title">Privacy & Anonymity</h3>
+            <p style="color: var(--text-muted); font-size: 1.02rem; line-height: 1.7;">
+                Built on strict privacy-first principles. Each survivor is assigned a pseudonymous Anonymous ID (e.g. <code>CB-7842</code>). Personal contact information is kept strictly isolated from public views.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="card" style="margin-bottom: 3rem;">
+    <h2 style="color: var(--card-title-color); margin-bottom: 1.5rem; text-align: center;">How CareBridge Works</h2>
+    <div class="grid-4" style="margin-top: 1rem;">
+        <div class="step-card" style="border-left: 4px solid #6366f1;">
+            <span style="font-weight: 800; color: #6366f1; font-size: 0.9rem; text-transform: uppercase;">Step 1</span>
+            <h4 style="margin: 0.4rem 0;">Daily Check-In</h4>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">Answer a brief 5-question survey measuring stress, sleep, concentration, and support.</p>
+        </div>
+        <div class="step-card" style="border-left: 4px solid #06b6d4;">
+            <span style="font-weight: 800; color: #06b6d4; font-size: 0.9rem; text-transform: uppercase;">Step 2</span>
+            <h4 style="margin: 0.4rem 0;">ML Analysis</h4>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">Interpretable AI model evaluates patterns to generate supportive distress risk indicators (Low, Moderate, High).</p>
+        </div>
+        <div class="step-card" style="border-left: 4px solid #f59e0b;">
+            <span style="font-weight: 800; color: #f59e0b; font-size: 0.9rem; text-transform: uppercase;">Step 3</span>
+            <h4 style="margin: 0.4rem 0;">Early Warning Alert</h4>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">Rules detect sudden stress spikes or persistent poor sleep to suggest proactive follow-up.</p>
+        </div>
+        <div class="step-card" style="border-left: 4px solid #10b981;">
+            <span style="font-weight: 800; color: #10b981; font-size: 0.9rem; text-transform: uppercase;">Step 4</span>
+            <h4 style="margin: 0.4rem 0;">Care Coordination</h4>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">Authorized support workers review anonymized indicators and offer timely assistance.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Support Disclaimer -->
+<section style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 2.2rem; border-radius: var(--radius); text-align: center; box-shadow: var(--shadow);">
+    <h3 style="color: var(--card-title-color); margin-bottom: 0.75rem;">Need Immediate Assistance?</h3>
+    <p style="color: var(--text-main); max-width: 750px; margin: 0 auto 1.5rem; font-size: 1.05rem; line-height: 1.7;">
+        CareBridge is an automated monitoring system and cannot respond to immediate crisis events in real time. If you feel unsafe or require immediate medical assistance, please access local emergency services.
+    </p>
+    <a href="{{ url_for('survivor_support') }}" class="btn btn-secondary">Explore Dedicated Support Resources & Helplines</a>
+</section>
+{% endblock %}

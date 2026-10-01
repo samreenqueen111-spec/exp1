@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Daily Check-in | CareBridge{% endblock %}
+
+{% block content %}
+<div style="max-width: 680px; margin: 1rem auto 2.5rem;">
+    <div class="card wellness-spotlight">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 2.4rem; margin-bottom: 0.5rem;">🌿</div>
+            <h2 style="color: var(--card-title-color); margin-bottom: 0.5rem;">Daily Well-Being Check-in</h2>
+            <p style="color: var(--text-muted); font-size: 0.98rem; max-width: 540px; margin: 0 auto; line-height: 1.6;">
+                Take a gentle pause for yourself. There are no right or wrong answers—simply share what feels true for you today in this private, safe space.
+            </p>
+        </div>
+
+        <form method="POST" action="{{ url_for('checkin') }}">
+            
+            <!-- Question 1: Stress Level -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <label for="stress_score">⚡ 1. How heavy or manageable does your stress feel right now?</label>
+                    <span class="slider-val" id="val_stress">5</span>
+                </div>
+                <input type="range" id="stress_score" name="stress_score" min="1" max="10" value="5" data-output="val_stress">
+                <div class="slider-labels">
+                    <span>1 (Calm & Manageable)</span>
+                    <span>5 (Moderate Pressure)</span>
+                    <span>10 (Heavy / Overwhelming)</span>
+                </div>
+            </div>
+
+            <!-- Question 2: Sleep Quality -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <label for="sleep_score">🌙 2. How restful was your sleep last night?</label>
+                    <span class="slider-val" id="val_sleep">5</span>
+                </div>
+                <input type="range" id="sleep_score" name="sleep_score" min="1" max="10" value="5" data-output="val_sleep">
+                <div class="slider-labels">
+                    <span>1 (Restless / Interrupted)</span>
+                    <span>5 (Average Rest)</span>
+                    <span>10 (Deep & Peaceful)</span>
+                </div>
+            </div>
+
+            <!-- Question 3: Concentration -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <label for="concentration_score">🎯 3. How easy has it been to focus or find mental clarity today?</label>
+                    <span class="slider-val" id="val_conc">5</span>
+                </div>
+                <input type="range" id="concentration_score" name="concentration_score" min="1" max="10" value="5" data-output="val_conc">
+                <div class="slider-labels">
+                    <span>1 (Hard to Focus / Foggy)</span>
+                    <span>5 (Manageable Focus)</span>
+                    <span>10 (Clear & Centered)</span>
+                </div>
+            </div>
+
+            <!-- Question 4: Social Support -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <label for="social_support_score">🤝 4. How supported and connected do you feel right now?</label>
+                    <span class="slider-val" id="val_supp">5</span>
+                </div>
+                <input type="range" id="social_support_score" name="social_support_score" min="1" max="10" value="5" data-output="val_supp">
+                <div class="slider-labels">
+                    <span>1 (Feeling On My Own)</span>
+                    <span>5 (Somewhat Connected)</span>
+                    <span>10 (Surrounded by Care)</span>
+                </div>
+            </div>
+
+            <!-- Question 5: Distressing Thoughts Frequency -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <label for="distress_frequency">💭 5. How frequently have distressing or uneasy thoughts surfaced today?</label>
+                    <span class="slider-val" id="val_distress">5</span>
+                </div>
+                <input type="range" id="distress_frequency" name="distress_frequency" min="1" max="10" value="5" data-output="val_distress">
+                <div class="slider-labels">
+                    <span>1 (Hardly At All)</span>
+                    <span>5 (Occasional Waves)</span>
+                    <span>10 (Frequent Throughout the Day)</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; text-align: center;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.95rem; font-size: 1.05rem; box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);">
+                    Save Check-in & View Gentle Insights &rarr;
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

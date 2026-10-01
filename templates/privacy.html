@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy & Safety | CareBridge{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    <h1 style="color: var(--primary-color); margin-bottom: 1rem;">Privacy & Data Safety Policy</h1>
+    
+    <p style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        CareBridge is engineered around trauma-informed data protection. Your safety, dignity, and privacy are embedded into every layer of our platform.
+    </p>
+
+    <div class="grid-2" style="margin-bottom: 2rem;">
+        <div class="info-box">
+            <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">🔒 What Data We Collect</h3>
+            <ul style="margin-left: 1.2rem; margin-top: 0.5rem; font-size: 0.95rem; color: var(--text-main);">
+                <li><strong>Anonymous ID:</strong> System-generated code (e.g. <code>CB-7842</code>).</li>
+                <li><strong>Self-reported numerical check-ins:</strong> Daily ratings (1-10) for stress, sleep, concentration, and support.</li>
+                <li><strong>Age Group & Optional Demographics:</strong> For aggregate statistical reporting.</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3 style="color: var(--secondary-color); margin-bottom: 0.5rem;">🚫 What We NEVER Collect</h3>
+            <ul style="margin-left: 1.2rem; margin-top: 0.5rem; font-size: 0.95rem; color: var(--text-main);">
+                <li><strong>Trauma Narratives:</strong> We do not prompt or store descriptions of traumatic events.</li>
+                <li><strong>Real-time Geolocation:</strong> No GPS or location tracking.</li>
+                <li><strong>Public Profiling:</strong> Data is never exposed publicly or shared with commercial entities.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3 style="color: var(--card-title-color); margin-top: 1.5rem;">Who Can Access Your Data?</h3>
+    <p style="color: var(--text-main);">
+        Only authenticated and authorized support workers or counselors assigned to your organization can view anonymized trend indicators linked to your Anonymous ID. Administrators manage system health and resources but cannot casually browse sensitive check-in scores.
+    </p>
+
+    <h3 style="color: var(--card-title-color); margin-top: 1.5rem;">Data Retention & Deletion</h3>
+    <p style="color: var(--text-main);">
+        Survivors retain full ownership over their check-in data. You may request account closure and complete data deletion at any time by contacting your assigned support coordinator.
+    </p>
+
+    <h3 style="color: var(--card-title-color); margin-top: 1.5rem;">Technical Security Controls</h3>
+    <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color: var(--text-main);">
+        <li>Passwords hashed using PBKDF2 / SHA-256 via Werkzeug security.</li>
+        <li>Session-based HTTP-only authentication tokens.</li>
+        <li>SQL parameterization protecting against SQL injection attacks.</li>
+        <li>Clean console log sanitization — zero logging of sensitive answers or passwords.</li>
+    </ul>
+
+    <div style="margin-top: 2.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; text-align: center;">
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Create Pseudonymous Account</a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

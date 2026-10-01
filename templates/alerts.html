@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Care Alerts & Follow-Ups | CareBridge{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="margin-bottom: 1.5rem;">
+        <h1 style="color: var(--card-title-color);">Care Alerts & Gentle Follow-Ups</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">
+            Proactive alerts triggered by sensitive thresholds (such as sudden shifts in stress, consecutive high distress indicators, or persistent sleep disruption). These notifications guide timely, empathetic check-ins.
+        </p>
+    </div>
+
+    {% if alerts %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Alert #</th>
+                        <th>Participant ID</th>
+                        <th>Indicator</th>
+                        <th>Observed Trigger</th>
+                        <th>Current Status</th>
+                        <th>Flagged At</th>
+                        <th>Staff Action & Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alerts %}
+                        <tr>
+                            <td>#{{ a['id'] }}</td>
+                            <td><code>{{ a['anonymous_id'] }}</code></td>
+                            <td><span class="badge badge-{{ a['indicator'] | lower }}">{{ a['indicator'] }}</span></td>
+                            <td style="max-width: 320px; line-height: 1.4;">{{ a['reason'] }}</td>
+                            <td><span class="badge badge-{{ a['status'] | lower }}">{{ a['status'] }}</span></td>
+                            <td>{{ a['created_at'] }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('counselor_alerts') }}" style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                                    <input type="hidden" name="alert_id" value="{{ a['id'] }}">
+                                    <select name="status" class="form-control" style="width: auto; padding: 0.25rem 0.45rem; font-size: 0.85rem;">
+                                        <option value="Pending" {% if a['status'] == 'Pending' %}selected{% endif %}>Pending Follow-up</option>
+                                        <option value="In Review" {% if a['status'] == 'In Review' %}selected{% endif %}>In Caring Review</option>
+                                        <option value="Resolved" {% if a['status'] == 'Resolved' %}selected{% endif %}>Support Provided</option>
+                                    </select>
+                                    <input type="text" name="notes" placeholder="Care notes / actions taken..." class="form-control" style="width: 170px; padding: 0.25rem 0.45rem; font-size: 0.85rem;">
+                                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+            <p style="font-size: 1rem;">✨ No active care alerts recorded.</p>
+            <p style="font-size: 0.85rem;">All enrolled participants are currently reporting manageable wellness scores.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

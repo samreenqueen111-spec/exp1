@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Check-in History | CareBridge{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <h1 style="color: var(--card-title-color);">Your Check-in History</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                A private, personal record of your self-reflections. Looking at your journey over time can remind you of your quiet strength and recovery.
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('checkin') }}" class="btn btn-primary">+ New Daily Reflection</a>
+        </div>
+    </div>
+
+    {% if checkins %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date & Time</th>
+                        <th>Stress Level</th>
+                        <th>Sleep Rest</th>
+                        <th>Focus & Clarity</th>
+                        <th>Felt Support</th>
+                        <th>Distress Frequency</th>
+                        <th>Wellness Indicator</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in checkins %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ c['created_at'] }}</td>
+                            <td><strong>{{ c['stress_score'] }}</strong>/10</td>
+                            <td><strong>{{ c['sleep_score'] }}</strong>/10</td>
+                            <td><strong>{{ c['concentration_score'] }}</strong>/10</td>
+                            <td><strong>{{ c['social_support_score'] }}</strong>/10</td>
+                            <td><strong>{{ c['distress_frequency'] }}</strong>/10</td>
+                            <td>
+                                <span class="badge badge-{{ c['predicted_indicator'] | lower }}">
+                                    {{ c['predicted_indicator'] }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+            <p style="font-size: 1.05rem; margin-bottom: 0.5rem;">No reflections logged yet.</p>
+            <p style="font-size: 0.9rem; margin-bottom: 1.25rem;">Whenever you feel ready, take your first two-minute check-in to begin tracking your wellness path.</p>
+            <a href="{{ url_for('checkin') }}" class="btn btn-primary">Start Your First Check-in</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

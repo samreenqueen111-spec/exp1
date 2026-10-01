@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Check-in Result | CareBridge{% endblock %}
+
+{% block content %}
+<div style="max-width: 680px; margin: 1.5rem auto;">
+    <div class="card wellness-spotlight" style="border: 1px solid rgba(139, 92, 246, 0.35);">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🌸</div>
+            <h2 style="color: var(--card-title-color); margin-bottom: 0.35rem;">Check-in Submitted Successfully</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">
+                Thank you for checking in with yourself today. Recorded at <strong>{{ checkin['created_at'] }}</strong>
+            </p>
+        </div>
+
+        <!-- Result Badge Card -->
+        <div style="text-align: center; background: var(--calm-gradient), var(--user-badge-bg); padding: 1.75rem; border-radius: var(--radius); border: 1px solid rgba(99, 102, 241, 0.25); margin-bottom: 1.75rem; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.08);">
+            <p style="font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 0.65rem; font-weight: 700;">
+                Today's Wellness Reflection
+            </p>
+            <div style="margin-bottom: 0.85rem;">
+                <span class="badge badge-{{ checkin['predicted_indicator'] | lower }}" style="font-size: 1.25rem; padding: 0.5rem 1.4rem; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                    {{ checkin['predicted_indicator'] }} Distress Indicator
+                </span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0;">
+                Support Model Alignment: <strong>{{ (checkin['predicted_probability'] * 100) | round(1) }}%</strong> &bull; Empathetic AI Guidance
+            </p>
+        </div>
+
+        <!-- Contributing Factors -->
+        <div style="margin-bottom: 1.75rem; background: var(--user-badge-bg); padding: 1.35rem 1.6rem; border-radius: 16px; border: 1px solid var(--border-color);">
+            <h3 style="color: var(--card-title-color); margin-bottom: 0.85rem; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🔍</span> What Shaped Today's Reflection
+            </h3>
+            <ul style="margin-left: 1.25rem; color: var(--text-main); font-size: 0.98rem; line-height: 1.7;">
+                {% for factor in analysis['factors'] %}
+                    <li style="margin-bottom: 0.45rem;">{{ factor }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Suggested Next Step -->
+        <div class="alert alert-{{ analysis['next_step']['alert_level'] }}" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; margin-bottom: 1.75rem; border-radius: 16px;">
+            <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span>✨</span> Suggested Next Step: {{ analysis['next_step']['action'] }}
+            </div>
+            <div style="line-height: 1.6; font-size: 0.95rem;">{{ analysis['next_step']['details'] }}</div>
+        </div>
+
+        <!-- Safety Notice -->
+        <div style="background: rgba(99, 102, 241, 0.08); padding: 1.1rem 1.35rem; border-radius: 16px; border: 1px solid rgba(99, 102, 241, 0.25); font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.6;">
+            🌱 <strong>A Gentle Note:</strong> This reflection is supportive and non-diagnostic. It offers caring guidance to help you observe your feelings and reach out to loved ones or trusted counselors whenever you wish.
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('survivor_dashboard') }}" class="btn btn-primary">Return to My Dashboard</a>
+            <a href="{{ url_for('survivor_support') }}" class="btn btn-outline">Explore Caring Helplines &rarr;</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

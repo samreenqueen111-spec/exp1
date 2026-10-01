@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Survivor Registration | CareBridge{% endblock %}
+
+{% block content %}
+<div style="max-width: 550px; margin: 2rem auto;">
+    <div class="card">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 0.5rem;">Create Confidential Account</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            We collect only the minimum required information to safeguard your privacy.
+        </p>
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="name">Display Name or Pseudonym *</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Hope2026 or Alex" required>
+                <small style="color: var(--text-muted);">You can use an alias or preferred handle.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Private Email Address *</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="user@example.org" required>
+                <small style="color: var(--text-muted);">Used exclusively for secure authentication.</small>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="age_group">Age Group *</label>
+                    <select id="age_group" name="age_group" class="form-control" required>
+                        <option value="" disabled selected>Select age group</option>
+                        <option value="under 18">Under 18</option>
+                        <option value="18-24">18 – 24</option>
+                        <option value="25-34">25 – 34</option>
+                        <option value="35-49">35 – 49</option>
+                        <option value="50+">50+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender (Optional)</label>
+                    <select id="gender" name="gender" class="form-control">
+                        <option value="Prefer not to say">Prefer not to say</option>
+                        <option value="Female">Female</option>
+                        <option value="Male">Male</option>
+                        <option value="Non-binary">Non-binary</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="contact_pref">Support Contact Preference (Optional)</label>
+                <select id="contact_pref" name="contact_pref" class="form-control">
+                    <option value="App Notification">In-App Notification Only</option>
+                    <option value="Email">Email Follow-Up</option>
+                    <option value="SMS">SMS / Phone</option>
+                    <option value="None">None (Self-monitoring only)</option>
+                </select>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password *</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter password" minlength="6" required>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-bottom: 1.5rem; font-size: 0.9rem;">
+                🛡️ Upon registration, a unique <strong>Anonymous ID</strong> (e.g. <code>CB-XXXX</code>) will be automatically assigned to protect your identity in counselor views.
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create My Account</button>
+        </form>
+
+        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <p>Already registered? <a href="{{ url_for('login') }}" style="color: var(--primary-color); font-weight: 600;">Log in here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

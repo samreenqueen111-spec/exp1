@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Survivor Dashboard | CareBridge{% endblock %}
+
+{% block content %}
+<!-- Section 1: Daily Check-In Banner -->
+<div class="card wellness-spotlight" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div style="max-width: 720px;">
+            <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.4rem;">
+                <span style="font-size: 1.8rem;">🌿</span>
+                <h1 style="color: var(--card-title-color); font-size: 2.1rem; margin: 0;">Welcome back, {{ current_user['name'] }}</h1>
+            </div>
+            <h2 style="font-size: 1.25rem; color: var(--primary-color); font-weight: 700; margin-bottom: 0.35rem;">Daily Check-In</h2>
+            <p style="color: var(--text-muted); font-size: 0.98rem; margin: 0; line-height: 1.6;">
+                Take two quiet minutes for yourself today. Pausing to check in helps you recognize how you feel, track your natural rhythm, and find gentle balance.
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.4rem;">
+                Confidential ID: <code style="color: var(--primary-color);">{{ current_user['anonymous_id'] }}</code> &bull; 100% Private, Encrypted & Secure
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('checkin') }}" class="btn btn-primary" style="box-shadow: 0 6px 22px rgba(99, 102, 241, 0.45); padding: 0.95rem 2rem;">
+                <span>✨</span> Start Daily Check-In
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Grid: Your Well-Being Today, AI Wellness Insight, and You're Not Alone -->
+<div class="grid-3" style="margin-bottom: 2rem;">
+    
+    <!-- Section 2: Your Well-Being Today -->
+    <div class="card wellness-spotlight">
+        <h3 class="card-title">
+            <span>🌱 Your Well-Being Today</span>
+            {% if latest_checkin %}
+                <span class="badge badge-{{ latest_checkin['predicted_indicator'] | lower }}">
+                    {{ latest_checkin['predicted_indicator'] }} Indicator
+                </span>
+            {% endif %}
+        </h3>
+
+        {% if latest_checkin %}
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.1rem;">
+                Recorded on <strong>{{ latest_checkin['created_at'] }}</strong>
+            </p>
+
+            <!-- Visual Metric Progress Bars -->
+            <div class="metric-bar-group">
+                <div class="metric-bar-item">
+                    <div class="metric-bar-header">
+                        <span>⚡ Stress Level</span>
+                        <strong style="color: var(--text-main);">{{ latest_checkin['stress_score'] }}/10</strong>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill stress" style="width: {{ latest_checkin['stress_score'] * 10 }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="metric-bar-item">
+                    <div class="metric-bar-header">
+                        <span>🌙 Rest & Sleep</span>
+                        <strong style="color: var(--text-main);">{{ latest_checkin['sleep_score'] }}/10</strong>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill sleep" style="width: {{ latest_checkin['sleep_score'] * 10 }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="metric-bar-item">
+                    <div class="metric-bar-header">
+                        <span>🤝 Felt Connection</span>
+                        <strong style="color: var(--text-main);">{{ latest_checkin['social_support_score'] }}/10</strong>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill support" style="width: {{ latest_checkin['social_support_score'] * 10 }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="metric-bar-item">
+                    <div class="metric-bar-header">
+                        <span>🎯 Mental Clarity</span>
+                        <strong style="color: var(--text-main);">{{ latest_checkin['concentration_score'] }}/10</strong>
+                    </div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-fill" style="width: {{ latest_checkin['concentration_score'] * 10 }}%;"></div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 1.25rem 0;">
+                <div style="font-size: 2.4rem; margin-bottom: 0.5rem;">🌤️</div>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.25rem; line-height: 1.6;">
+                    No check-in recorded yet today. Whenever you feel ready, take your check-in to view your wellness snapshot.
+                </p>
+                <a href="{{ url_for('checkin') }}" class="btn btn-secondary btn-sm">Complete Check-in</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Section 3: AI Wellness Insight -->
+    <div class="card" style="border-top: 4px solid var(--secondary-color);">
+        <h3 class="card-title">
+            <span>💡 AI Wellness Insight</span>
+        </h3>
+        {% if latest_analysis %}
+            <div class="alert alert-{{ latest_analysis['next_step']['alert_level'] }}" style="padding: 0.75rem 1rem; font-size: 0.9rem; margin-bottom: 1rem; border-radius: 14px;">
+                <strong>Gentle Suggestion:</strong> {{ latest_analysis['next_step']['action'] }}
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-main); line-height: 1.65;">
+                {{ latest_analysis['next_step']['details'] }}
+            </p>
+        {% else %}
+            <div style="text-align: center; padding: 1.25rem 0; color: var(--text-muted);">
+                <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">💌</div>
+                <p style="font-size: 0.95rem; line-height: 1.6;">
+                    Thoughtful, non-diagnostic guidance tailored to your answers will appear here as soon as you submit your reflection.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Section 6: You’re Not Alone -->
+    <div class="card" style="border-top: 4px solid #ec4899;">
+        <h3 class="card-title">
+            <span>🤝 You’re Not Alone</span>
+        </h3>
+        <div style="padding: 0.25rem 0;">
+            <p style="font-size: 0.95rem; color: var(--text-main); line-height: 1.65; margin-bottom: 1rem;">
+                Healing takes time, and every emotion you experience is valid. You never have to walk through difficult moments alone.
+            </p>
+            <div style="background: rgba(236, 72, 153, 0.08); border: 1px solid rgba(236, 72, 153, 0.25); border-radius: 14px; padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.88rem; color: var(--text-main);">
+                💜 <strong>Compassionate Space:</strong> Our certified counselors and supportive helplines are available with complete confidentiality.
+            </div>
+            <a href="{{ url_for('survivor_support') }}" class="btn btn-outline btn-sm" style="width: 100%;">
+                Access Support Directory &rarr;
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Section 4: Your Progress -->
+<div class="card" style="margin-bottom: 2rem; border: 1px solid rgba(99, 102, 241, 0.25);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.75rem;">
+        <div>
+            <h3 class="card-title" style="margin: 0;">
+                <span>📈 Your Progress</span>
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.5;">
+                Observe how your stress, rest, and support evolve over time. Notice your patterns and celebrate each day of self-care.
+            </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; background: var(--user-badge-bg); padding: 0.5rem 1.15rem; border-radius: 9999px; border: 1px solid var(--border-color);">
+            <span style="font-size: 1.1rem;">🌻</span>
+            <span style="font-size: 0.92rem; font-weight: 700; color: var(--card-title-color);">
+                <strong>{{ total_checkins }}</strong> Check-ins Completed
+            </span>
+        </div>
+    </div>
+
+    <!-- Dynamic Trend Chart -->
+    <div style="position: relative; height: 340px; width: 100%; padding: 0.75rem 0;">
+        <canvas id="survivorTrendChart"></canvas>
+    </div>
+</div>
+
+<!-- Grid: Section 5: Recommended Support & Recent Logs -->
+<div class="grid-2">
+    <!-- Section 5: Recommended Support -->
+    <div class="card" style="border-top: 4px solid var(--accent-teal);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.1rem;">
+            <h3 class="card-title" style="margin: 0;">
+                <span>🛡️ Recommended Support</span>
+            </h3>
+            <a href="{{ url_for('survivor_support') }}" class="btn btn-outline btn-sm">All Helplines &rarr;</a>
+        </div>
+        <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Simple, comforting resources ready whenever you need a pause or gentle assistance.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div style="background: var(--user-badge-bg); padding: 0.95rem 1.15rem; border-radius: 14px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; color: var(--card-title-color); font-size: 0.95rem; margin-bottom: 0.25rem;">
+                    🌬️ Mindful 4-7-8 Breathing
+                </div>
+                <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+                    Inhale slowly for 4 seconds, hold gently for 7, and exhale smoothly for 8. Repeat 3 times to ground your nervous system.
+                </div>
+            </div>
+
+            <div style="background: var(--user-badge-bg); padding: 0.95rem 1.15rem; border-radius: 14px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; color: var(--card-title-color); font-size: 0.95rem; margin-bottom: 0.25rem;">
+                    📞 Confidential Support Network
+                </div>
+                <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+                    Reach out to accredited helplines and compassionate crisis advocates available 24/7.
+                </div>
+            </div>
+
+            <div style="background: var(--user-badge-bg); padding: 0.95rem 1.15rem; border-radius: 14px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; color: var(--card-title-color); font-size: 0.95rem; margin-bottom: 0.25rem;">
+                    💬 Connect with a Trusted Ally
+                </div>
+                <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+                    Sending a brief text or sharing a quick conversation with someone who cares can ease the weight of a difficult day.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent History Table Card -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.1rem;">
+            <h3 class="card-title" style="margin:0;">
+                <span>📋 Recent Check-in Logs</span>
+            </h3>
+            <a href="{{ url_for('survivor_history') }}" class="btn btn-outline btn-sm">Full History &rarr;</a>
+        </div>
+        <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            A quick review of your recent check-in records.
+        </p>
+
+        {% if recent_checkins %}
+            <div class="table-responsive">
+                <table class="table" style="font-size: 0.92rem;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Stress</th>
+                            <th>Sleep</th>
+                            <th>Support</th>
+                            <th>Distress Indicator</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in recent_checkins %}
+                            <tr>
+                                <td><strong>{{ c['created_at'].split()[0] if ' ' in c['created_at'] else c['created_at'] }}</strong></td>
+                                <td>{{ c['stress_score'] }}/10</td>
+                                <td>{{ c['sleep_score'] }}/10</td>
+                                <td>{{ c['social_support_score'] }}/10</td>
+                                <td>
+                                    <span class="badge badge-{{ c['predicted_indicator'] | lower }}">
+                                        {{ c['predicted_indicator'] }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p style="color: var(--text-muted); font-size: 0.95rem; text-align: center; padding: 2rem 0;">
+                No reflections logged yet. When you are ready, your entries will be safely displayed here.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
